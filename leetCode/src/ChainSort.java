@@ -27,7 +27,7 @@ public class ChainSort {
         Node slow = start;
         Node fast = start;
 
-        while (slow.next != null ) {
+        while (slow.next != null) {
             while (fast.next != null) {
                 Node f = fast.next;
                 int temp = 0;
@@ -44,8 +44,30 @@ public class ChainSort {
     }
 
     //快排
-    public void quickSort() {
+    public void quickSort(Node head, Node end) {
+        Node slow = null;
+        Node fast;
+        if (head != end) {
+            slow = head;
+            fast = head.next;
+            while (fast != end) {
+                if (fast.value < head.value) {
+                    slow = slow.next;
 
+                    int temp = slow.value;
+                    slow.value = fast.value;
+                    fast.value = temp;
+                }
+                fast = fast.next;
+            }
+            if (slow != head) {
+                int temp = slow.value;
+                slow.value = head.value;
+                head.value = temp;
+            }
+            quickSort(head, slow);
+            quickSort(slow.next, end);
+        }
     }
 
     //打印链表
@@ -70,6 +92,7 @@ public class ChainSort {
         }
         chainSort.print(start);
         chainSort.bubbleSort(start);
+       // chainSort.quickSort(start, null);
         chainSort.print(start);
     }
 }

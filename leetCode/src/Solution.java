@@ -401,7 +401,6 @@ public class Solution {
         }
 
 
-
         return s;
     }
 
@@ -1249,7 +1248,7 @@ public class Solution {
     //数到 m 的那个人出列；他的下一个人又从 1 开始报数，
     //数到 m 的那个人又出列；依此规律重复下去，直到最后剩下一个人。要求找出最后出列的人的编号
     //  todo ！！  此题 M 为固定值  若为非固定的值具体分析  ！！
-    public  int solve(int n, int m) {
+    public int solve(int n, int m) {
         if (m == 1 || n < 2)
             return n;
         // 创建环形链表
@@ -1277,6 +1276,7 @@ public class Solution {
     class Node {
         int date;
         Node next;
+
         public Node(int date) {
             this.date = date;
         }
@@ -1284,6 +1284,7 @@ public class Solution {
 
     /**
      * 生成长度为 n 的环形链表
+     *
      * @param n
      * @return
      */
@@ -1298,5 +1299,37 @@ public class Solution {
         // 头尾串联
         next.next = head;
         return head;
+    }
+
+    //复习快排  试着写写
+    public void testQuickSort(int[] arrays, int low, int high) {
+        int pivod = arrays[low];
+        int i = low + 1;
+        int j = high;
+
+        while (i < j) {
+            while (i < j && arrays[i] < pivod) {
+                i++;
+            }
+            while (i < j && arrays[j] > pivod) {
+                j--;
+            }
+            if (i < j) {
+                int temp = arrays[i];
+                arrays[i] = arrays[j];
+                arrays[j] = temp;
+            }
+        }
+        if (arrays[i] < arrays[low]) {
+            int temp = arrays[low];
+            arrays[low] = arrays[i];
+            arrays[i] = temp;
+        }
+        if (i - 1 > low) {
+            testQuickSort(arrays, low, i - 1);
+        }
+        if (i + 1 < high) {
+            testQuickSort(arrays, i, high);
+        }
     }
 }
