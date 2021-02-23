@@ -30,7 +30,7 @@ public class IntegerToRoman {
         }
 
         StringBuilder builder = new StringBuilder();
-
+        //由高位至低位使用num对进位(10进制与罗马数相对应)除法  求得余几拼接几个对应罗马文 最后将已经转化的数减去  !**顺序是从高位到低位**!
         for (int a = 0; a < allArabianRomanNumbers.length; a++) {
             int times = num / allArabianRomanNumbers[a];
             for (int b = 0; b < times; b++) {

@@ -1328,7 +1328,7 @@ public class Solution {
         if (i - 1 > low) {
             testQuickSort(arrays, low, i - 1);
         }
-        if (i + 1 < high) {
+        if (i < high) {
             testQuickSort(arrays, i, high);
         }
     }

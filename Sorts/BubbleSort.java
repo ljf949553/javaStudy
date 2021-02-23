@@ -1,8 +1,5 @@
 package Sorts;
 
-import DataStructures.Queues.LinkedQueue;
-import sun.misc.Queue;
-
 import static Sorts.SortUtils.*;
 
 /**
