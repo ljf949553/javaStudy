@@ -1303,33 +1303,71 @@ public class Solution {
 
     //复习快排  试着写写
     public void testQuickSort(int[] arrays, int low, int high) {
+        //取第一个值用于对比
         int pivod = arrays[low];
+        //开始位置
         int i = low + 1;
+        //结束位置
         int j = high;
 
         while (i < j) {
+            //前半部分  如果小于基准数 指针后移 如果大于退出循环
             while (i < j && arrays[i] < pivod) {
                 i++;
             }
+            //后半部分 如果大于基准数 指针前移 如果小于退出循环
             while (i < j && arrays[j] > pivod) {
                 j--;
             }
+            //以上两个循环退出时, 指针指向不符合的两个数字, 调换位置
             if (i < j) {
                 int temp = arrays[i];
                 arrays[i] = arrays[j];
                 arrays[j] = temp;
             }
         }
+
+        //退出以上循环时, 确认基准数与当前指针所在数的大小, 如果不符则替换
         if (arrays[i] < arrays[low]) {
             int temp = arrays[low];
             arrays[low] = arrays[i];
             arrays[i] = temp;
         }
+        //拆分数组为两部分 递归调用
         if (i - 1 > low) {
             testQuickSort(arrays, low, i - 1);
         }
         if (i < high) {
             testQuickSort(arrays, i, high);
         }
+    }
+
+    //复习二分查找 试着写写    !--数组要有序--
+    public int binarySearch(int[] arr, int target) {
+        if (arr.length == 0) {
+            return -1;
+        }
+        //开始位置
+        int begin = 0;
+        //结束位置
+        int end = arr.length - 1;
+        while (begin < end) {
+            //找到中间位置
+            int mid = (end + begin) / 2;
+            //使用Comparable比较两个数字大小
+            Comparable compiler = arr[mid];
+            final int i1 = compiler.compareTo(target);
+            if (i1 < 0) {
+                //小于零  使开始位置等于中间
+                begin = mid + 1;
+            } else if (i1 > 0) {
+                //大于零 使开结束位置处于中间
+                end = mid - 1;
+            } else {
+                //等于则直接返回
+                return mid;
+            }
+        }
+        return -1;
     }
 }
