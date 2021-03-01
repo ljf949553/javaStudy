@@ -463,6 +463,7 @@ public class Solution {
 
     /**
      * 自己写的有点太麻烦  .
+     *
      * @param s
      * @return
      */
@@ -499,12 +500,18 @@ public class Solution {
     //输出: [1,2,4]
     //解释: 输入数组表示数字 123。
     public int[] plusOne(int[] digits) {
+        //carry是几应该都没什么影响
         int carry = 1;
+        //从后向前遍历
         for (int i = digits.length - 1; i >= 0; i--) {
+            //最后一位加carry
             digits[i] += carry;
+            //令carry 除以 10 得到进位
             carry = digits[i] / 10;
+            //最后一位赋值为 对 10 取余
             digits[i] = digits[i] % 10;
         }
+        //如果最后carry大于 0 , 说明第一位需要进位 . 将carry放在第一位, digits全部后移一位 .
         if (carry > 0) {
             int res[] = new int[digits.length + 1];
             res[0] = carry;
@@ -1063,6 +1070,15 @@ public class Solution {
         return -1; // can't find it.
     }
 
+    //相同的数字 异或(^)为0 与0异或最终得出为出现1次的数
+    public int bestSingleNumber(int[] nums) {
+        int num = 0;
+        for (int j : nums) {
+            num = num ^ j;
+        }
+        return num;
+    }
+
     //给定一个链表，判断链表中是否有环。
     //为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
     //示例 1：
@@ -1193,8 +1209,8 @@ public class Solution {
         if (headA == null || headB == null) return null;
         ListNode pA = headA, pB = headB;
         while (pA != pB) {
-            pA = pA == null ? headB : pA.next;
-            pB = pB == null ? headA : pB.next;
+            pA = (pA == null ? headB : pA.next);
+            pB = (pB == null ? headA : pB.next);
         }
         return pA;
     }
@@ -1279,6 +1295,7 @@ public class Solution {
     //数到 m 的那个人又出列；依此规律重复下去，直到最后剩下一个人。要求找出最后出列的人的编号
     //  todo ！！  此题 M 为固定值  若为非固定的值具体分析  ！！
     public int solve(int n, int m) {
+        //每次数 1(m == 1) 那么第1个人一定会到最后 , 如果只有 1(n < 2) 个人, 直接出列
         if (m == 1 || n < 2)
             return n;
         // 创建环形链表
@@ -1286,10 +1303,13 @@ public class Solution {
         // 遍历删除
         int count = 1;
         Node cur = head;
-        Node pre = null;//前驱节点
+        //前驱节点 删除节点时使用
+        Node pre = null;
+        //循环退出条件为 : 链表内只有一个节点
         while (head.next != head) {
-            // 删除节点
+            //遍历至第 m 个  删除此节点
             if (count == m) {
+                //重置count
                 count = 1;
                 pre.next = cur.next;
                 cur = pre.next;
@@ -1303,7 +1323,7 @@ public class Solution {
     }
 
     // 定义链表节点  此类只为此题服务
-    class Node {
+    static class Node {
         int date;
         Node next;
 
@@ -1322,8 +1342,7 @@ public class Solution {
         Node head = new Node(1);
         Node next = head;
         for (int i = 2; i <= n; i++) {
-            Node tmp = new Node(i);
-            next.next = tmp;
+            next.next = new Node(i);
             next = next.next;
         }
         // 头尾串联
@@ -1484,5 +1503,163 @@ public class Solution {
             }
         }
         return -1;
+    }
+
+    //      !!!!        前缀和问题       !!!!
+    //给定一个整数数组 nums，求出数组从索引i到j（i≤j）范围内元素的总和，包含i、j两点。
+    //
+    //实现 NumArray 类：
+    //
+    //NumArray(int[] nums) 使用数组 nums 初始化对象
+    //int sumRange(int i, int j) 返回数组 nums 从索引i到j（i≤j）范围内元素的总和，包含i、j两点（也就是 sum(nums[i], nums[i + 1], ... , nums[j])）
+    //
+    //
+    //示例：
+    //
+    //输入：
+    //["NumArray", "sumRange", "sumRange", "sumRange"]
+    //[[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]
+    //输出：
+    //[null, 1, -1, -3]
+    //
+    //解释：
+    //NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);
+    //numArray.sumRange(0, 2); // return 1 ((-2) + 0 + 3)
+    //numArray.sumRange(2, 5); // return -1 (3 + (-5) + 2 + (-1))
+    //numArray.sumRange(0, 5); // return -3 ((-2) + 0 + 3 + (-5) + 2 + (-1))
+
+    //可直接for循环暴力解决
+    //但是题干说会重复调用 , 每一次都会将数组内元素相加 , 看了下大佬题解 , 使用前缀和的方式
+    //前缀和 的方式时通过对暴力方法的一步一步优化得来 :
+    // 1)暴力法每次都会重新计算 , 既然会多次调用 , 就用三层循环将每个位置的数据求出来存起来, 这样每次查一下就行了 .
+    // 2)多层循环继续优化: 当前项的值 = 当前前缀和 - 上一项的前缀和
+    //      nums 数组的每一项都对应有它的前缀和： nums 的第 0 项到 当前项 的和。
+    //      用数组 preSum 表示，preSum[i] : 第 0 项到 第 i 项 的和。
+    //                preSum[i] = nums[0] + nums[1] +…+nums[i]
+    //      易得，nums 的某项 = 两个相邻前缀和的差：
+    //                nums[i] = preSum[i] - preSum[i - 1]
+    //                nums[i]=preSum[i]−preSum[i−1]
+    //      对于 nums 的 i 到 j 的元素和，上式叠加，有：
+    //                nums[i] +…+nums[j]=preSum[j] - preSum[i - 1]
+    //                nums[i]+…+nums[j]=preSum[j]−preSum[i−1]
+    //      当 i 为 0 时，此时 i-1 为 -1，我们故意让preSum[-1]为 0，使得上式在i=0时也成立：
+    //                nums[0] +…+nums[j]=preSum[j]
+    //                nums[0]+…+nums[j]=preSum[j]
+    //      所以：
+    //                sumRange(i, j) = preSum[j] - preSum[i - 1]
+    //
+    //链接：https://leetcode-cn.com/problems/range-sum-query-immutable/solution/jian-dan-wen-ti-xi-zhi-fen-xi-qian-tan-q-t2nz/
+    class NumArray {
+        private int[] preSum;
+
+        public NumArray(int[] nums) {
+            int len = nums.length;
+            this.preSum = new int[len + 1];
+            for (int i = 0; i < len; i++)
+                preSum[i + 1] = preSum[i] + nums[i];
+
+        }
+
+        public int sumRange(int i, int j) {
+            return preSum[j + 1] - preSum[i];
+        }
+    }
+
+
+    //给你两个非空的链表，表示两个非负的整数。它们每位数字都是按照逆序的方式存储的，并且每个节点只能存储一位数字。
+    //
+    //请你将两个数相加，并以相同形式返回一个表示和的链表。
+    //
+    //你可以假设除了数字 0 之外，这两个数都不会以 0开头。
+    //
+    //输入：l1 = [2,4,3], l2 = [5,6,4]
+    //输出：[7,0,8]
+    //解释：342 + 465 = 807.
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode pre = new ListNode(0);
+        ListNode cur = pre;
+        int carry = 0;
+        while (l1 != null || l2 != null) {
+            //l1是否为null , 为null 则 x = 0
+            int x = l1 == null ? 0 : l1.val;
+            int y = l2 == null ? 0 : l2.val;
+            //当前位的值为  x+y+carry(进位)
+            int sum = x + y + carry;
+            //进位
+            carry = sum / 10;
+            //去掉进位后的值
+            sum = sum % 10;
+            //当前位赋值
+            cur.next = new ListNode(sum);
+            cur = cur.next;
+            if (l1 != null)
+                l1 = l1.next;
+            if (l2 != null)
+                l2 = l2.next;
+        }
+        //出循环后如果有进位,增加一个新节点
+        if (carry == 1) {
+            cur.next = new ListNode(carry);
+        }
+        return pre.next;
+    }
+
+
+    //给定一个字符串，请你找出其中不含有重复字符的最长子串的长度。
+    //
+    //示例 :
+    //输入: s = "abcabcbb"
+    //输出: 3
+    //解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+    public int lengthOfLongestSubstring(String s) {
+        // 异常输入排查
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        int maxCount = 0;
+        int len = s.length();
+        int start = 0;
+        int end = 0;
+        HashMap<Character, Integer> map = new HashMap<>();
+
+        // 右指针不断向前，直到字符串尾部
+        while (end < len) {
+            maxCount = Math.max(maxCount, end - start);
+            // 当遇到重复值，说明左指针需要跳转，跳转的位置是该重复值的下标+1
+            // 比如字符串abcdecf，到遇到第二个c，即便从bcde任意一个开始，长度都无法超过a，只有从decf开始计算才是新一轮查找
+            // 值得注意的是，如果碰到了重复值的下标比左指针还小的情况，不应该跳转，因为左指针左边的元素不再窗口内，比如abba
+            if (map.containsKey(s.charAt(end)) && map.get(s.charAt(end)) >= start) {
+                start = map.get(s.charAt(end)) + 1;
+            }
+            map.put(s.charAt(end), end);        // 无论重不重复都需要更新，该元素最近的下标
+            end++;
+        }
+        maxCount = Math.max(maxCount, end - start);
+        return maxCount;
+    }
+
+
+    //删除链表中等于给定值 val 的所有节点。
+    //
+    // 示例:
+    // 输入: 1->2->6->3->4->5->6, val = 6
+    // 输出: 1->2->3->4->5
+    public ListNode removeElements(ListNode head, int val) {
+        //哨兵节点 , 将其置为第一个节点, 避免前几个节点需要删除的情况
+        ListNode sentinel = new ListNode(0);
+        sentinel.next = head;
+
+        ListNode prev = sentinel, curr = head;
+        while (curr != null) {
+            //如果找到此值跳过此节点
+            if (curr.val == val) {
+                prev.next = curr.next;
+            } else {
+                //否则两个指针分别向后走
+                prev = curr;
+            }
+            curr = curr.next;
+        }
+        return sentinel.next;
     }
 }
