@@ -216,7 +216,7 @@ public class Solution {
     }
 
     //单向链表节点类
-    public class ListNode {
+    public static class ListNode {
         int val;
         ListNode next;
 
@@ -1661,5 +1661,64 @@ public class Solution {
             curr = curr.next;
         }
         return sentinel.next;
+    }
+    
+    //统计所有小于非负整数n的质数的数量。
+    //
+    // 示例 1：
+    // 输入：n = 10
+    // 输出：4
+    // 解释：小于 10 的质数一共有 4 个, 它们是 2, 3, 5, 7 。
+    //此题时比较硬得数学题
+    //
+    //初始化长度 O(n)的标记数组，表示这个数组是否为质数。数组初始化所有的数都是质数.
+    //从 2 开始将当前数字的倍数全都标记为合数。标记到 根号n 时停止即可
+    //注意每次找当前素数 x 的倍数时，是从 x^2开始的。因为如果 x > 2x>2，那么 2*x2∗x 肯定被素数 2 给过滤了，最小未被过滤的肯定是 x^2.
+    public int countPrimes(int n) {
+        boolean[] isPrim = new boolean[n];
+        Arrays.fill(isPrim, true);
+        // 从 2 开始枚举到 sqrt(n)。
+        for (int i = 2; i * i < n; i++) {
+            // 如果当前是素数
+            if (isPrim[i]) {
+                // 就把从 i*i 开始，i 的所有倍数都设置为 false。
+                for (int j = i * i; j < n; j+=i) {
+                    isPrim[j] = false;
+                }
+            }
+        }
+
+        // 计数
+        int cnt = 0;
+        for (int i = 2; i < n; i++) {
+            if (isPrim[i]) {
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    //给定两个字符串 s 和 t，判断它们是否是同构的。
+    //如果 s 中的字符可以按某种映射关系替换得到 t ，那么这两个字符串是同构的。
+    //
+    // 示例 1:
+    // 输入：s = "egg", t = "add"
+    // 输出：true
+    //
+    //通过s 与 t 字符串的各个位置上的一一映射关系 , 如果不一致则有问题
+    public boolean isIsomorphic(String s, String t) {
+        Map<Character, Character> s2t = new HashMap<Character, Character>();
+        Map<Character, Character> t2s = new HashMap<Character, Character>();
+        int len = s.length();
+        for (int i = 0; i < len; ++i) {
+            char x = s.charAt(i), y = t.charAt(i);
+            //如果s2t中已经存在第 i 位字符,并且s2t中 x 字符与房前 y 值
+            if ((s2t.containsKey(x) && s2t.get(x) != y) || (t2s.containsKey(y) && t2s.get(y) != x)) {
+                return false;
+            }
+            s2t.put(x, y);
+            t2s.put(y, x);
+        }
+        return true;
     }
 }
