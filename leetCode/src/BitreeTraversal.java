@@ -1,5 +1,3 @@
-import sun.reflect.generics.tree.Tree;
-
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -159,4 +157,110 @@ public class BitreeTraversal {
                 list.add(currentNode.right);
         }
     }
+
+
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder == null) {
+            return null;
+        }
+
+        return buildFromPreAndIn(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+    }
+
+    // 从 前序 与 中序遍历序列构造二叉树
+    private TreeNode buildFromPreAndIn(int[] preorder, int preStr, int preEnd, int[] inorder, int inStr, int inEnd) {
+        //拿到前序第一个的值  (拿到根节点的值)
+        int rootValue = preorder[preStr];
+        //使用此值生成根节点
+        TreeNode root = new TreeNode(rootValue);
+        //如果 开始位置等于结束位置(数组长度为0) 那么结束
+        if (preStr == preEnd) {
+            return null;
+        }
+        //从开始位置寻找根节点位置
+        int rootInorder = inStr;
+        while (inorder[rootInorder] != rootValue && rootInorder <= inEnd) {
+            rootInorder++;
+        }
+        //中序遍历的前半部分为 左子树
+        int leftLength = rootInorder - inStr;
+        //中序遍历后半部分为 右子树
+        int leftPreEnd = preStr + leftLength;
+        //如果 左子树的数组长度 大于0 则递归调用
+        if (leftLength > 0) {
+            //连接树下一个左节点
+            root.left = buildFromPreAndIn(preorder, preStr + 1, leftPreEnd, inorder, inStr, inEnd);
+        }
+        //如果左子树 数组长度 小于 当前数组长度 表示存在右子树
+        if (leftLength < preEnd - preStr) {
+            //连接树下一个右节点
+            root.right = buildFromPreAndIn(preorder, leftPreEnd + 1, preEnd, inorder, rootInorder + 1, inEnd);
+        }
+
+        return root;
+    }
+
+    //由 中序 和 后序遍历 构造二叉树
+    public TreeNode buildFromInAndPost(int[] inOrder, int[] postOrder, int inStart, int inEnd, int postStart, int postEnd) {
+        if (inStart > inEnd || postStart > postEnd) {
+            return null;
+        }
+        TreeNode root = new TreeNode(postOrder[postEnd]);
+        if (postStart == postEnd) {
+            return root;
+        }
+        int index = inStart;
+        //令index指向中序序列中根节点所在位置
+        while (inOrder[index] != postOrder[postEnd]) {
+            index++;
+        }
+        int leftSubInStart = inStart;
+        int leftSubInEnd = index - 1;
+        int rightSubInStart = index + 1;
+        int rightSubInEnd = inEnd;
+
+        int leftSubPostStart = postStart;
+        int leftSubPostEnd = leftSubPostStart + (leftSubInEnd - leftSubInStart);
+        int rightSubPostStart = leftSubPostEnd + 1;
+        int rightSubPostEnd = postEnd - 1;
+
+        root.left = buildFromInAndPost(inOrder, postOrder, leftSubInStart, leftSubInEnd, leftSubPostStart, leftSubPostEnd);
+        root.right = buildFromInAndPost(inOrder, postOrder, rightSubInStart, rightSubInEnd, rightSubPostStart, rightSubPostEnd);
+        return root;
+    }
+
+    //由 前序 与 后序 构造二叉树
+    public TreeNode buildFromPreAndPost(int[] pre, int[] post, int preStart, int preEnd, int postStart, int postEnd) {
+        //越界，说明已经递归构造到树末端
+        if (preStart > preEnd || postStart > postEnd) {
+            return null;
+        }
+        //前序序列第一个元素为根
+        TreeNode root = new TreeNode(pre[preStart]);
+        //仅剩一个节点待构造，是叶节点，直接返回
+        if (preStart == preEnd) {
+            return root;
+        }
+        //index为数组中最右一个左子树的元素（划分左右子树边界）
+        int index = postStart;
+        //前序遍历中左子树的根节点对应的是后序遍历得到的数组序列中左子树元素的最右一个
+        while (pre[preStart + 1] != post[index]) {
+            index++;
+        }
+        //左子树的前序、后序序列起止下标
+        int leftSubPreStart = preStart + 1;
+        int leftSubPreEnd = preStart + 1 + index - postStart;
+        int leftSubPostStart = postStart;
+        int leftSubPostEnd = index;
+        //右子树的前序、后序序列起止下标
+        int rightSubPreStart = leftSubPreEnd + 1;
+        int rightSubPreEnd = preEnd;
+        int rightSubPostStart = index + 1;
+        int rightSubPostEnd = postEnd - 1;
+        //递归构造左右子树
+        root.left = buildFromPreAndPost(pre, post, leftSubPreStart, leftSubPreEnd, leftSubPostStart, leftSubPostEnd);
+        root.right = buildFromPreAndPost(pre, post, rightSubPreStart, rightSubPreEnd, rightSubPostStart, rightSubPostEnd);
+        return root;
+    }
+
 }

@@ -1,4 +1,5 @@
 import javafx.scene.control.Cell;
+import sun.plugin.dom.core.CoreConstants;
 
 import java.util.*;
 
@@ -1662,7 +1663,7 @@ public class Solution {
         }
         return sentinel.next;
     }
-    
+
     //统计所有小于非负整数n的质数的数量。
     //
     // 示例 1：
@@ -1682,7 +1683,7 @@ public class Solution {
             // 如果当前是素数
             if (isPrim[i]) {
                 // 就把从 i*i 开始，i 的所有倍数都设置为 false。
-                for (int j = i * i; j < n; j+=i) {
+                for (int j = i * i; j < n; j += i) {
                     isPrim[j] = false;
                 }
             }
@@ -1721,4 +1722,287 @@ public class Solution {
         }
         return true;
     }
+
+    //给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+    //翻转链表
+    public ListNode reverseList(ListNode head) {
+        //pre作用是保留最后的前一个curr 因为最后的curr是null
+        ListNode prev = null;
+        ListNode curr = head;
+        while (curr != null) {
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+
+    //递归方法
+    private ListNode reverse(ListNode head) {
+        // 递归到最后一个节点，返回新的新的头结点
+        if (head.next == null) {
+            return head;
+        }
+        ListNode newHead = reverse(head.next);
+        head.next.next = head;
+        head.next = null;
+        return newHead;
+    }
+
+    //给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+    //
+    //百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+    //
+    //例如，给定如下二叉搜索树:
+    //                 6
+    //                / \
+    //               2   8
+    //              / \ / \
+    //             0  4 7  9
+    //               / \
+    //              3  5
+    //输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+    //输出: 6
+    //解释: 节点 2 和节点 8 的最近公共祖先是 6。
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (p.val == root.val) {
+            return p;
+        }
+        if (q.val == root.val) {
+            return q;
+        }
+        if (p.val > root.val && q.val > root.val) {
+            return lowestCommonAncestor(root.right, p, q);
+        } else if (p.val < root.val && q.val < root.val) {
+            return lowestCommonAncestor(root.left, p, q);
+        } else {
+            return root;
+        }
+    }
+
+    //给定两个数组，编写一个函数来计算它们的交集。
+    //
+    //示例 1：
+    //
+    //输入：nums1 = [1,2,2,1], nums2 = [2,2]
+    //输出：[2]
+    //示例 2：
+    //
+    //输入：nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+    //输出：[9,4]
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Set<Integer> set1 = new HashSet<>();
+        for (int num : nums1) {
+            if (!set.add(num)) {
+                set1.add(num);
+            }
+        }
+
+        for (int num : nums2) {
+            if (!set.contains(num)) {
+                set1.add(num);
+            }
+        }
+        int[] arr = new int[set1.size()];
+        int i = 0;
+        for (Integer integer : set1) {
+            arr[i++] = integer;
+
+        }
+        return arr;
+    }
+
+    //给定两个数组，编写一个函数来计算它们的交集。
+    //
+    //示例 1：
+    //
+    //输入：nums1 = [1,2,2,1], nums2 = [2,2]
+    //输出：[2,2]
+    //示例 2：
+    //
+    //输入：nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+    //输出：[9,4]
+    public int[] intersect(int[] nums1, int[] nums2) {
+        List<Integer> list = new ArrayList<>();
+        List<Integer> list1 = new ArrayList<>();
+        for (int num : nums1) {
+            list.add(num);
+        }
+
+        for (int num : nums2) {
+            if (list.contains(num)) {
+                list1.add(num);
+                list.remove((Integer) num);
+            }
+        }
+        int[] arr = new int[list1.size()];
+        int i = 0;
+        for (Integer integer : list1) {
+            arr[i++] = integer;
+
+        }
+        return arr;
+    }
+
+    //给定一个 正整数 num ，编写一个函数，如果 num 是一个完全平方数，则返回 true ，否则返回 false 。
+    //进阶：不要 使用任何内置的库函数，如  sqrt 。
+    //
+    //示例 1：
+    //输入：num = 16
+    //输出：true
+    //
+    //  !!!  利用 1+3+5+7+9+…+(2n-1)=n^2，即完全平方数肯定是前n个连续奇数的和
+    public boolean isPerfectSquare(int num) {
+        int sumnum = 1;
+        while (num > 0) {
+            num -= sumnum;
+            sumnum += 2;
+        }
+        return num == 0;
+    }
+
+    //给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串 ransom 能不能由第二个字符串 magazines 里面的字符构成。如果可以构成，返回 true ；否则返回 false。
+    //
+    //(题目说明：为了不暴露赎金信字迹，要从杂志上搜索各个需要的字母，组成单词来表达意思。杂志字符串中的每个字符只能在赎金信字符串中使用一次。)
+    //
+    //示例 1：
+    //输入：ransomNote = "a", magazine = "b"
+    //输出：false
+    //
+    //示例 2：
+    //输入：ransomNote = "aa", magazine = "ab"
+    //输出：false
+    //   !!! 利用 StringBuilder 的 deleteCharAt() 将检查到的字符删除掉 直至无法找到下一个字符 .
+    public boolean canConstruct(String ransomNote, String magazine) {
+        StringBuilder stringBuilder = new StringBuilder(magazine);
+        int index;
+        for (char c : ransomNote.toCharArray()) {
+            index = stringBuilder.indexOf(String.valueOf(c));
+            if (index >= 0) {
+                stringBuilder.deleteCharAt(index);
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
+    //
+    //示例：
+    //s = "leetcode"
+    //返回 0
+    //
+    //s = "loveleetcode"
+    //返回 2
+    public int firstUniqChar(String s) {
+        HashMap<Character, Integer> map = new HashMap();
+        for (char ch : s.toCharArray()) {
+            if (map.containsKey(ch)) {
+                map.put(ch, map.get(ch) + 1);
+            } else {
+                map.put(ch, 1);
+            }
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (map.get(s.charAt(i)) == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    //给定两个字符串 s 和 t，它们只包含小写字母。
+    //字符串 t 由字符串 s 随机重排，然后在随机位置添加一个字母。
+    //请找出在 t 中被添加的字母。
+    //
+    //示例 1：
+    //输入：s = "abcd", t = "abcde"
+    //输出："e"
+    //解释：'e' 是那个被添加的字母。
+    //
+    //示例 2：
+    //输入：s = "", t = "y"
+    //输出："y"
+    public char findTheDifference(String s, String t) {
+
+        // 利用 StringBuild 都不如用两层循环  辣鸡如斯.
+      /*  StringBuilder stringBuilder = new StringBuilder(s);
+        for (char ch : t.toCharArray()) {
+            int i = stringBuilder.indexOf(Character.toString(ch));
+            if (i == -1) {
+                return ch;
+            }
+            stringBuilder.deleteCharAt(i);
+        }
+        return ' ';*/
+
+        // 利用 char 固定值得特点 , 多出来的就是新增的 .
+        //  !!!! 遇到 char 题 , 多想 !!! 位操作
+        int sumS = 0;
+        int sumT = 0;
+        for (char ch : s.toCharArray()) {
+            sumS += ch;
+        }
+        for (char ch : t.toCharArray()) {
+            sumT += ch;
+        }
+        return (char) (sumT - sumS);
+    }
+
+    //给定字符串 s 和 t ，判断 s 是否为 t 的子序列。
+    //字符串的一个子序列是原始字符串删除一些（也可以不删除）字符而不改变剩余字符相对位置形成的新字符串。（例如，"ace"是"abcde"的一个子序列，而"aec"不是）。
+    //
+    //示例 1：
+    //输入：s = "abc", t = "ahbgdc"
+    //输出：true
+    //
+    //示例 2：
+    //输入：s = "axc", t = "ahbgdc"
+    //输出：false
+
+    // !!!!  自己写的  内存耗费较多
+   /* public boolean isSubsequence(String s, String t) {
+        if ("".equals(s)) {
+            return true;
+        }
+        if (null == s || null == t || "".equals(t)) {
+            return false;
+        }
+        int j = t.indexOf(s.charAt(0));
+        if (j < 0) {
+            return false;
+        }
+        int k = 1;
+        int pre = 0;
+        String index = t;
+        for (int i = 1; i < s.length(); i++) {
+            int l = index.indexOf(s.charAt(i)) ;
+            index = index.substring(l + 1);
+            int temp = pre;
+            pre += l + 1;
+            l = l + temp;
+            if (l > j) {
+                k++;
+                j = l;
+            }
+        }
+        return k == s.length();
+    }*/
+
+    // !!! 题解 双指针还是优秀啊
+    public boolean isSubsequence(String s, String t) {
+        int n = s.length(), m = t.length();
+        int i = 0, j = 0;
+        while (i < n && j < m) {
+            if (s.charAt(i) == t.charAt(j)) {
+                i++;
+            }
+            j++;
+        }
+        return i == n;
+    }
+
 }
