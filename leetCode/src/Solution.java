@@ -1847,7 +1847,7 @@ public class Solution {
     }
 
     //给定一个 正整数 num ，编写一个函数，如果 num 是一个完全平方数，则返回 true ，否则返回 false 。
-    //进阶：不要 使用任何内置的库函数，如  sqrt 。
+    //进阶：不要 使用任何内置的库函数，如 sqrt 。
     //
     //示例 1：
     //输入：num = 16
@@ -2004,5 +2004,233 @@ public class Solution {
         }
         return i == n;
     }
+
+
+    //给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+    //
+    //进阶：你可以设计并实现时间复杂度为O(n) 的解决方案吗？
+    //
+    //示例 1：
+    //输入：nums = [100,4,200,1,3,2]
+    //输出：4
+    //解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+    //
+    //示例 2：
+    //输入：nums = [0,3,7,2,5,8,4,6,0,1]
+    //输出：9
+    public int longestConsecutive(int[] nums) {
+        Set<Integer> numsSet = new HashSet<>();
+        for (Integer num : nums) {
+            numsSet.add(num);
+        }
+        int longest = 0;
+        for (Integer num : nums) {
+            if (numsSet.remove(num)) {
+                // 向当前元素的左边搜索,eg: 当前为100, 搜索：99，98，97,...
+                int currentLongest = 1;
+                int current = num;
+                while (numsSet.remove(current - 1)) {
+                    current--;
+                }
+                currentLongest += (num - current);
+                // 向当前元素的右边搜索,eg: 当前为100, 搜索：101，102，103,...
+                current = num;
+                while (numsSet.remove(current + 1)) {
+                    current++;
+                }
+                currentLongest += (current - num);
+                // 搜索完后更新longest.
+                longest = Math.max(longest, currentLongest);
+            }
+        }
+        return longest;
+    }
+
+
+    //给你一个整数数组 jobs ，其中 jobs[i] 是完成第 i 项工作要花费的时间。
+    //请你将这些工作分配给 k 位工人。所有工作都应该分配给工人，且每项工作只能分配给一位工人。工人的 工作时间 是完成分配给他们的所有工作花费时间的总和。请你设计一套最佳的工作分配方案，使工人的 最大工作时间 得以 最小化 。
+    //返回分配方案中尽可能 最小 的 最大工作时间 。
+    //
+    //示例 1：
+    //输入：jobs = [3,2,3], k = 3
+    //输出：3
+    //解释：给每位工人分配一项工作，最大工作时间是 3 。
+    //
+    //示例 2：
+    //输入：jobs = [1,2,4,7,8], k = 2
+    //输出：11
+    //解释：按下述方式分配工作：
+    //1 号工人：1、2、8（工作时间 = 1 + 2 + 8 = 11）
+    //2 号工人：4、7（工作时间 = 4 + 7 = 11）
+    //最大工作时间是 11 。
+    public int minimumTimeRequired(int[] jobs, int k) {
+        /*int maxWorkTime = 0;
+        if (k <= 0) {
+            return 0;
+        }
+        for (int job : jobs) {
+            maxWorkTime = Math.max(job, maxWorkTime);
+        }
+        if (k == 1) {
+            return maxWorkTime;
+        }
+        int[] arrs = new int[k];
+        int index = 0;
+
+        for (int i = 0; i < jobs.length; i++) {
+            int minDiff = Integer.MAX_VALUE;
+            int minIndex = 0;
+            for (int j = 0; j < arrs.length; j++) {
+                int temp = arrs[j];
+                temp += jobs[i];
+                int diff = temp - maxWorkTime;
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    index = Math.max(temp, maxWorkTime);
+                    minIndex = j;
+                }
+            }
+            arrs[minIndex] += jobs[i];
+            maxWorkTime = index;
+        }
+        return maxWorkTime;  */
+        // TODO: 2021/5/8   困难题我不配啊  对不起
+        //  注掉的解法  [1,2,4,7,8], k = 2 会出现 [1,4,7] [2,8] 正确应该是[4,7] [1,2,8]  拉跨
+        return 0;
+    }
+
+    //给定一棵叶值序列为(6, 7, 4, 9, 8)的树。
+    //如果有两棵二叉树的叶值序列是相同，那么我们就认为它们是叶相似的。
+    //如果给定的两个根结点分别为root1 和root2的树是叶相似的，则返回true；否则返回 false 。
+    //                 3
+    //               /   \
+    //              5     1
+    //            /  \   /  \
+    //           6   2   9   8
+    //              / \
+    //             7   4
+    public boolean leafSimilar(TreeNode root1, TreeNode root2) {
+        ArrayList<Integer> list1 = new ArrayList<>();
+        ArrayList<Integer> list2 = new ArrayList<>();
+        dfs(root1, list1);
+        dfs(root2, list2);
+        return list1.equals(list2);
+    }
+
+    public void dfs(TreeNode root, ArrayList<Integer> arrayList) {
+        if (root == null) {
+            return;
+        }
+        if (root.left == null && root.right == null) {
+            arrayList.add(root.val);
+        }
+        if (root.left != null) {
+            dfs(root.left, arrayList);
+        }
+        if (root.right != null) {
+            dfs(root.right, arrayList);
+        }
+    }
+
+    //未知 整数数组 arr 由 n 个非负整数组成。
+    //经编码后变为长度为 n - 1 的另一个整数数组 encoded ，其中 encoded[i] = arr[i] XOR arr[i + 1] 。例如，arr = [1,0,2,1] 经编码后得到 encoded = [1,2,3] 。
+    //给你编码后的数组 encoded 和原数组 arr 的第一个元素 first（arr[0]）。
+    //请解码返回原数组 arr 。可以证明答案存在并且是唯一的。
+    //
+    //示例 1：
+    //输入：encoded = [1,2,3], first = 1
+    //输出：[1,0,2,1]
+    //解释：若 arr = [1,0,2,1] ，那么 first = 1 且 encoded = [1 XOR 0, 0 XOR 2, 2 XOR 1] = [1,2,3]
+    //
+    //示例 2：
+    //输入：encoded = [6,2,7,3], first = 4
+    //输出：[4,2,0,7,4]
+    //
+    // !!!!!  异或运算具有如下性质：
+    //   1.异或运算满足交换律和结合律；
+    //   2.任意整数和自身做异或运算的结果都等于 0 ，即 x ^ x = 0；
+    //   3.任意整数和 00 做异或运算的结果都等于其自身，即 x ^ 0 = x。
+    // !!!!!
+    //   符合交换律 给了第一个数 所以就很简单 !  下一个是这个题的进阶版!
+    public int[] decode(int[] encoded, int first) {
+        int n = encoded.length + 1;
+        int[] arr = new int[n];
+        arr[0] = first;
+        for (int i = 1; i < n; i++) {
+            arr[i] = arr[i - 1] ^ encoded[i - 1];
+        }
+        return arr;
+    }
+
+    //给你一个整数数组perm，它是前n个正整数的排列，且n是个 奇数。
+    //它被加密成另一个长度为 n - 1的整数数组encoded，满足encoded[i] = perm[i] XOR perm[i + 1]。比方说，如果perm = [1,3,2]，那么encoded = [2,1]。
+    //给你encoded数组，请你返回原始数组perm。题目保证答案存在且唯一。
+    //
+    //示例 1：
+    //输入：encoded = [3,1]
+    //输出：[1,2,3]
+    //解释：如果 perm = [1,2,3] ，那么 encoded = [1 XOR 2,2 XOR 3] = [3,1]
+    public int[] decode(int[] encoded) {
+        int n = encoded.length + 1;
+        int[] ans = new int[n];
+        // 求得除了 ans[n - 1] 的所有异或结果
+        int a = 0;
+        for (int i = 0; i < n - 1; i += 2) {
+            a ^= encoded[i];
+        }
+
+        // 求得 ans 的所有异或结果
+        int b = 0;
+        for (int i = 1; i <= n; i++) {
+            b ^= i;
+        }
+
+        // 求得 ans[n - 1] 后，从后往前做
+        ans[n - 1] = a ^ b;
+        for (int i = n - 2; i >= 0; i--) {
+            ans[i] = encoded[i] ^ ans[i + 1];
+        }
+        return ans;
+    }
+
+    //在两条独立的水平线上按给定的顺序写下 nums1 和 nums2 中的整数。
+    //现在，可以绘制一些连接两个数字 nums1[i]和 nums2[j]的直线，这些直线需要同时满足满足：
+    //nums1[i] == nums2[j]
+    //且绘制的直线不与任何其他连线（非水平线）相交。
+    //请注意，连线即使在端点也不能相交：每个数字只能属于一条连线。
+    //以这种方法绘制线条，并返回可以绘制的最大连线数。
+    //示例 1：
+    //输入：nums1 = [1,4,2], nums2 = [1,2,4]
+    //输出：2
+    //解释：可以画出两条不交叉的线，如上图所示。
+    //
+    //但无法画出第三条不相交的直线，因为从 nums1[1]=4 到 nums2[2]=4 的直线将与从 nums1[2]=2 到 nums2[1]=2 的直线相交。
+    //示例 2：
+    //输入：nums1 = [2,5,1,2,5], nums2 = [10,5,2,1,5,2]
+    //输出：3
+    //
+    //    !!!!!    最长公共子序列  !!!!
+    public int maxUncrossedLines(int[] nums1, int[] nums2) {
+        return 0;
+    }
+
+    //给定一个整数，写一个函数来判断它是否是 4 的幂次方。如果是，返回 true ；否则，返回 false 。
+    //整数 n 是 4 的幂次方需满足：存在整数 x 使得 n == 4x
+    //
+    //示例 1：
+    //输入：n = 16
+    //输出：true
+    //
+    //示例 2：
+    //输入：n = 5
+    //输出：false
+    //
+    //    n 与 n-1  等于 0   那么n为2的幂
+    //    !!!!!  只要这个数是2的幂  那么它的二进制表示中 有且仅有一位为 1  !!!!!  (4  8  16 是特殊的2 , 同样适用. 例如 0100 为4,是4的幂; 0100 0000 为64,是4的幂)
+    //     !!!! 那么 4 就特殊在   :   仅有一个的1 出现在从低位(从右至左 ← ,从0开始 . 因为第0位为2的0次方 10进制为1 , 第1位为2的一次方,十进制为2 ,以此类推. )开始的第偶数位时 . 即为4的幂
+    public boolean isPowerOfFour(int n) {
+        return n > 0 && (n & (n - 1)) == 0 && (n & 0xaaaaaaaa) == 0;
+    }
+
 
 }

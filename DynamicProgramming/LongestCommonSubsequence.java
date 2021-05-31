@@ -1,5 +1,8 @@
 package DynamicProgramming;
 
+/**
+ * 最长公共子序列
+ */
 class LongestCommonSubsequence {
 
     public static String getLCS(String str1, String str2) {

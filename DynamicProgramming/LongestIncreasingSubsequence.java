@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 /**
  * @author Afrizal Fikri (https://github.com/icalF)
+ *         最长递增序列
  */
 public class LongestIncreasingSubsequence {
     public static void main(String[] args) {
